@@ -3,6 +3,7 @@ import React from "react";
 //creates a context object which childern components subscribe to.
 const Store = React.createContext();
 
+// basically the store which stores the state of the application
 const initialState = {
   episodes: [],
   favourites: [],

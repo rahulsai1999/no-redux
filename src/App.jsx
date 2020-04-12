@@ -2,8 +2,10 @@ import React from "react";
 import "./App.css";
 import { Store } from "./utils/store";
 import Axios from "axios";
+import { Card } from "antd";
+import { HeartOutlined } from "@ant-design/icons";
 
-function App() {
+const App = () => {
   //The useContext hook provides access to the data present
   //as the value of Context Provider.
   const { state, dispatch } = React.useContext(Store);
@@ -12,7 +14,7 @@ function App() {
 
   // loads the episodes data once the componentMounts
   React.useEffect(() => {
-    state.episodes.length == 0 &&
+    state.episodes.length === 0 &&
       Axios.get(API_URL).then((response) => {
         const { _embedded } = response.data;
         dispatch({
@@ -20,17 +22,43 @@ function App() {
           payload: _embedded.episodes,
         });
       });
-  }, []);
+  });
+
+  const { episodes } = state;
+  const { Meta } = Card;
 
   return (
     <React.Fragment>
       <div>
         <h1>Episodes</h1>
         <p>Select your favourite episodes</p>
-        {console.log(state)}
+        {episodes.length !== 0 ? (
+          episodes.map((item) => {
+            return (
+              <Card
+                key={item.id}
+                style={{ width: 300 }}
+                cover={
+                  <img
+                    src={item.image != null ? item.image.medium : null}
+                    alt={item.name}
+                  />
+                }
+                actions={[<HeartOutlined key="favourite" />]}
+              >
+                <Meta
+                  title={`Season: ${item.season} Episode: ${item.number}`}
+                  description={item.name}
+                />
+              </Card>
+            );
+          })
+        ) : (
+          <div>Loading...</div>
+        )}
       </div>
     </React.Fragment>
   );
-}
+};
 
 export default App;
