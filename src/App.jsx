@@ -2,7 +2,7 @@ import React from "react";
 import "./App.css";
 import { Store } from "./utils/store";
 import Axios from "axios";
-import { Card } from "antd";
+import { Card, Row, Col } from "antd";
 import { HeartOutlined } from "@ant-design/icons";
 
 const App = () => {
@@ -29,33 +29,37 @@ const App = () => {
 
   return (
     <React.Fragment>
-      <div>
+      <div style={{ margin: 40 }}>
         <h1>Episodes</h1>
         <p>Select your favourite episodes</p>
-        {episodes.length !== 0 ? (
-          episodes.map((item) => {
-            return (
-              <Card
-                key={item.id}
-                style={{ width: 300 }}
-                cover={
-                  <img
-                    src={item.image != null ? item.image.medium : null}
-                    alt={item.name}
-                  />
-                }
-                actions={[<HeartOutlined key="favourite" />]}
-              >
-                <Meta
-                  title={`Season: ${item.season} Episode: ${item.number}`}
-                  description={item.name}
-                />
-              </Card>
-            );
-          })
-        ) : (
-          <div>Loading...</div>
-        )}
+        <Row gutter={[16, 16]}>
+          {episodes.length !== 0 ? (
+            episodes.map((item) => {
+              return (
+                <Col>
+                  <Card
+                    key={item.id}
+                    style={{ width: 300 }}
+                    cover={
+                      <img
+                        src={item.image != null ? item.image.medium : null}
+                        alt={item.name}
+                      />
+                    }
+                    actions={[<HeartOutlined key="favourite" />]}
+                  >
+                    <Meta
+                      title={`Season: ${item.season} Episode: ${item.number}`}
+                      description={item.name}
+                    />
+                  </Card>
+                </Col>
+              );
+            })
+          ) : (
+            <div>Loading...</div>
+          )}
+        </Row>
       </div>
     </React.Fragment>
   );
