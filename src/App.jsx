@@ -8,7 +8,7 @@ import "./App.css";
 const App = () => {
   return (
     <div style={{ margin: 40 }}>
-      <Router>
+      <Router basename="/no-redux/">
         <header>
           <Space>
             <Button type="danger">
