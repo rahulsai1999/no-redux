@@ -2,30 +2,49 @@ import React from "react";
 import "./App.css";
 import { Store } from "./utils/store";
 import Axios from "axios";
-import { Card, Row, Col } from "antd";
-import { HeartOutlined } from "@ant-design/icons";
+import { Card, Row, Col, Button } from "antd";
+import { LikeOutlined, LikeFilled } from "@ant-design/icons";
 
 const App = () => {
   //The useContext hook provides access to the data present
   //as the value of Context Provider.
   const { state, dispatch } = React.useContext(Store);
+  const { episodes, favourites } = state;
   const API_URL =
     "https://api.tvmaze.com/singlesearch/shows?q=rick-&-morty&embed=episodes";
 
+  const fetchDataAction = () => {
+    Axios.get(API_URL).then((response) => {
+      const { _embedded } = response.data;
+      return dispatch({
+        type: "FETCH_DATA",
+        payload: _embedded.episodes,
+      });
+    });
+  };
+
+  const toggleFavAction = (episode) => {
+    const episodeInFavourites = favourites.includes(episode);
+    let dispatchObj = {
+      type: "ADD_FAV",
+      payload: episode,
+    };
+    if (episodeInFavourites) {
+      const favouritesWithoutEpisode = favourites.filter(
+        (fav) => fav.id !== episode.id
+      );
+      dispatchObj = {
+        type: "REMOVE_FAV",
+        payload: favouritesWithoutEpisode,
+      };
+    }
+    return dispatch(dispatchObj);
+  };
+
   // loads the episodes data once the componentMounts
   React.useEffect(() => {
-    state.episodes.length === 0 &&
-      Axios.get(API_URL).then((response) => {
-        const { _embedded } = response.data;
-        dispatch({
-          type: "FETCH_DATA",
-          payload: _embedded.episodes,
-        });
-      });
+    state.episodes.length === 0 && fetchDataAction();
   });
-
-  const { episodes } = state;
-  const { Meta } = Card;
 
   return (
     <React.Fragment>
@@ -46,12 +65,27 @@ const App = () => {
                         alt={item.name}
                       />
                     }
-                    actions={[<HeartOutlined key="favourite" />]}
                   >
-                    <Meta
+                    <Card.Meta
                       title={`Season: ${item.season} Episode: ${item.number}`}
                       description={item.name}
                     />
+                    <br />
+                    <Button
+                      icon={
+                        favourites.find((fav) => fav.id === item.id) ? (
+                          <LikeFilled />
+                        ) : (
+                          <LikeOutlined />
+                        )
+                      }
+                      type="primary"
+                      onClick={() => toggleFavAction(item)}
+                    >
+                      {favourites.find((fav) => fav.id === item.id)
+                        ? "Unlike"
+                        : "Like"}
+                    </Button>
                   </Card>
                 </Col>
               );
