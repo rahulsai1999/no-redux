@@ -20,7 +20,7 @@ const App = () => {
           </Space>
         </header>
         <Switch>
-          <Route path="/" component={Main} />
+          <Route exact path="/" component={Main} />
           <Route path="/fav" component={Favourites} />
         </Switch>
       </Router>
